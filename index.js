@@ -25,11 +25,15 @@ app.use(async ctx => {
         const {signature, echostr, timestamp, nonce} = ctx.query
         const {token} = config
         const sortedParams = [timestamp, nonce, token].sort();
-        const hash = crypto.createHash(arr.join(''));
+        const hash = crypto.createHash(sortedParams.join(''));
         hash.update(sortedParams);
         const sha1Str = hash.digest('hex');
         console.log('---', sha1Str, signature);
-        if(sha1Str === signature) {
+        
+        if(sha1Str !== signature) {
+            return ctx.body = '不是微信平台发送过来的消息'
+        }
+        if(echostr){ // 微信验签名
             return ctx.body = echostr;
         }
 
