@@ -10,7 +10,7 @@ const config = {
     appsecret: 'dba63edf28fb758d6ea829042bbed2f0'
 }
 app.use(async ctx => {
-    console.log(ctx.query)
+    console.log(ctx.query, ctx.method)
     if(ctx.method === 'GET') {
         // 你可以这样直接返回完成微信验证签名
        /*  if(ctx.query.echostr) {
@@ -22,8 +22,7 @@ app.use(async ctx => {
         const {signature, echostr, timestamp, nonce} = ctx.query
         const {token} = config
         const arr = [timestamp, nonce, token];
-        const str = arr.join(' ');
-        const sha1Str = sha1(str);
+        const sha1Str = sha1(arr.join(' '));
         console.log('---', sha1Str, signature)
         if(sha1Str === signature) {
             return ctx.body = echostr;
