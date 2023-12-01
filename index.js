@@ -1,5 +1,7 @@
 import Koa from 'koa';
 import crypto from 'crypto';
+import getRawBody from 'raw-body';
+import convert from "xml-js";
 
 const app = new Koa();
 
@@ -36,13 +38,18 @@ app.use(async ctx => {
         if(echostr){ // 微信验签名
             return ctx.body = echostr;
         }
-    } else if(ctx.method === 'POST'){
-        // 用户发过来的消息
-        console.log('---开始解析html');
+    } else if(ctx.method === 'POST'){// 用户发过来的消息
+        if(sha1Str !== signature) {
+            return ctx.body = '不是微信平台发送过来的消息'
+        }
         // 解析 xml 到 JSON 数据
-        const xmlString = params.toString("utf-8");
+        const xml = await getRawBody(ctx.req, {
+            length: ctx.request.length,
+            limit: '1mb',
+            encoding: ctx.request.charset || 'utf-8'
+        })
         const paramsObj = JSON.parse(
-            convert.xml2json(xmlString, { compact: true, spaces: 4 }),
+            convert.xml2json(xml, { compact: true, spaces: 4 }),
         );
         console.log('---解析结果', paramsObj);
         // 获取历史记录
