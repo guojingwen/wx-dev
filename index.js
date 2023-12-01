@@ -25,7 +25,7 @@ app.use(async ctx => {
         const {signature, echostr, timestamp, nonce} = ctx.query
         const {token} = config
         const sortedParams = [timestamp, nonce, token].sort();
-        const hash = crypto.createHash(sortedParams.join(''));
+        const hash = crypto.createHash('sha1');
         hash.update(sortedParams);
         const sha1Str = hash.digest('hex');
         console.log('---', sha1Str, signature);
