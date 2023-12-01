@@ -94,7 +94,7 @@ app.use(async ctx => {
                 method: "POST",
                 url: 'https://hwmtasufab.us.aircode.run/requestProxy',
                 data: payload,
-                timeout: 30000,
+                timeout: 4500,
             });
             content = resp.content;
           } catch (err) {
