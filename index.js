@@ -13,16 +13,17 @@ const OPENAI_BASE = "https://api.openai.com";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
 app.use(async ctx => {
-    console.log(ctx.query, ctx.method);
+    const params = ctx.query;
+    console.log(params, ctx.method);
     if(ctx.method === 'GET') {
         // 你可以这样直接返回完成微信验证签名
-       /*  if(ctx.query.echostr) {
-            ctx.body = ctx.query.echostr;
+       /*  if(params.echostr) {
+            ctx.body = params.echostr;
             return
         } */
         // 但是不建议，因为别人可能冒充微信给你发消息
         // 正确的验证签名如下
-        const {signature, echostr, timestamp, nonce} = ctx.query
+        const {signature, echostr, timestamp, nonce} = params
         const {token} = config
         const sortedParams = [timestamp, nonce, token].sort().join('');
         const hash = crypto.createHash('sha1');
@@ -36,12 +37,13 @@ app.use(async ctx => {
         if(echostr){ // 微信验签名
             return ctx.body = echostr;
         }
-
+        console.log('---开始解析html');
         // 解析 xml 到 JSON 数据
         const xmlString = params.toString("utf-8");
         const paramsObj = JSON.parse(
             convert.xml2json(xmlString, { compact: true, spaces: 4 }),
         );
+        console.log('---解析结果', paramsObj);
         // 获取历史记录
         // todo 这里需要从数据库中读取最近历史数据
         const history = [];
