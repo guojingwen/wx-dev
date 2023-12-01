@@ -5,7 +5,6 @@ const app = new Koa();
 
 const config = {
     token: 'wx-dev', // 来自 接口配置信息
-
     appID: 'wx71a4ef0889d6ef46',
     appsecret: 'dba63edf28fb758d6ea829042bbed2f0'
 }
@@ -22,7 +21,7 @@ app.use(async ctx => {
         const {signature, echostr, timestamp, nonce} = ctx.query
         const {token} = config
         const arr = [timestamp, nonce, token];
-        const sha1Str = sha1(arr.join(' '));
+        const sha1Str = sha1(arr.join(''));
         console.log('---', sha1Str, signature)
         if(sha1Str === signature) {
             return ctx.body = echostr;
