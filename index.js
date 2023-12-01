@@ -11,6 +11,7 @@ const config = {
     appsecret: 'dba63edf28fb758d6ea829042bbed2f0'
 }
 const MAX_TOKEN = 500;
+const MODEL = 'gpt-3.5-turbo';
 const OPENAI_BASE = "https://api.openai.com";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
