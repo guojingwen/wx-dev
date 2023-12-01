@@ -14,7 +14,8 @@ const config = {
 const MAX_TOKEN = 500;
 const MODEL = 'gpt-3.5-turbo';
 const OPENAI_BASE = "https://api.openai.com";
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const AIRCODE_URL = process.env.AIRCODE_URL;
 
 app.use(async ctx => {
     const params = ctx.query;
@@ -92,7 +93,7 @@ app.use(async ctx => {
             // 使用aircode中转
             const resp = await axios({
                 method: "POST",
-                url: 'https://hwmtasufab.us.aircode.run/requestProxy',
+                url: AIRCODE_URL,
                 data: payload,
                 timeout: 4500,
             });
