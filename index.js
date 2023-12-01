@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import sha1 from 'sha1';
+import crypto from 'crypto';
 
 const app = new Koa();
 
@@ -24,9 +24,11 @@ app.use(async ctx => {
         // 正确的验证签名如下
         const {signature, echostr, timestamp, nonce} = ctx.query
         const {token} = config
-        const arr = [timestamp, nonce, token];
-        const sha1Str = sha1(arr.join(''));
-        console.log('---', sha1Str, signature)
+        const sortedParams = [timestamp, nonce, token].sort();
+        const hash = crypto.createHash(arr.join(''));
+        hash.update(sortedParams);
+        const sha1Str = hash.digest('hex');
+        console.log('---', sha1Str, signature);
         if(sha1Str === signature) {
             return ctx.body = echostr;
         }
