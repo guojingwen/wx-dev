@@ -93,7 +93,7 @@ app.use(async ctx => {
                     timeout: 4500, // 公众号自定义回复接口 5 秒内必须收到回复，否则聊天窗口会展示报错
                     method: "POST"
                 }
-            )
+            ).then(res => res.json());
             content = resp.data.choices[0]["message"].content;
           } catch (err) {
             console.log('---', err);
