@@ -2,20 +2,23 @@ import Koa from 'koa';
 import crypto from 'crypto';
 import getRawBody from 'raw-body';
 import convert from "xml-js";
-import axios from 'axios';
-
+import 'dotenv/config' // 需要配置你的 .env文件
+import fetch from 'node-fetch';
+import {HttpsProxyAgent} from 'https-proxy-agent';
+const {OPENAI_API_KEY, WARP_PROXY_PORT} = process.env
+// console.log(WARP_PROXY_PORT, OPENAI_API_KEY)
 const app = new Koa();
-
+const agent = new HttpsProxyAgent({
+    host: 'localhost', // 或者是 WARP-cli 代理的实际 IP 地址
+    port: WARP_PROXY_PORT // 替换为 WARP-cli 代理使用的端口
+});
 const config = {
     token: 'wx-dev', // 来自 接口配置信息
     appID: 'wx71a4ef0889d6ef46',
-    appsecret: 'dba63edf28fb758d6ea829042bbed2f0'
 }
 const MAX_TOKEN = 500;
 const MODEL = 'gpt-3.5-turbo';
 const OPENAI_BASE = "https://api.openai.com";
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const AIRCODE_URL = process.env.AIRCODE_URL;
 
 app.use(async ctx => {
     const params = ctx.query;
@@ -77,27 +80,21 @@ app.use(async ctx => {
 
         let content = "";
         try {
-            // 由于墙的存在， 需要你的服务器翻墙， 我翻墙有问题， 所以又使用了aircode中转
-            /* const resp = await axios({
-                method: "POST",
-                url: `${OPENAI_BASE}/v1/chat/completions`,
-                data: JSON.stringify(payload),
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${OPENAI_API_KEY}`,
-                },
-                timeout: 4500, // // 公众号自定义回复接口 5 秒内必须收到回复，否则聊天窗口会展示报错
-            });
-            content = resp.data.choices[0]["message"].content; */
-
-            // 使用aircode中转
-            const resp = await axios({
-                method: "POST",
-                url: AIRCODE_URL,
-                data: payload,
-                timeout: 4500,
-            });
-            content = resp.content;
+            // 由于墙的存在， 需要你的服务器翻墙
+            // 我的解决方式安装wrap-cli，设置proxy模式, 使用
+            const resp = await fetch(
+                `${OPENAI_BASE}/v1/chat/completions`,
+                {
+                    agent,
+                    headers: {
+                        "content-type": "application/json",
+                        authorization: `Bearer ${OPENAI_API_KEY}`,
+                    },
+                    body: JSON.stringify(payload),
+                    timeout: 4500, // 公众号自定义回复接口 5 秒内必须收到回复，否则聊天窗口会展示报错
+                }
+            )
+            content = resp.data.choices[0]["message"].content;
           } catch (err) {
             console.log('---', err);
             content = "微信接口超时，请回复回复继续重试";
