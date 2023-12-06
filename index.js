@@ -96,20 +96,20 @@ app.use(async ctx => {
             ).then(res => res.json());
             // console.log(resp);
             content = resp.choices[0]["message"].content;
-          } catch (err) {
+        } catch (err) {
             console.log('---', err);
             content = "微信接口超时，请回复回复继续重试";
-          }
-          console.log('---', content);
-          // 回复生成的内容
-          return `<xml>
+        }
+        console.log('---', content);
+        // 回复生成的内容
+        ctx.body = `<xml>
             <ToUserName><![CDATA[${paramsObj.xml.FromUserName._cdata}]]></ToUserName>
             <FromUserName><![CDATA[${paramsObj.xml.ToUserName._cdata}]]></FromUserName>
             <CreateTime>${+new Date().getTime()}</CreateTime>
             <MsgType><![CDATA[text]]></MsgType>
             <Content><![CDATA[${content}]]></Content>
-          </xml>`;
-
+        </xml>`;
+        return;
     }
     ctx.body = '微信公众号开发';
 })
