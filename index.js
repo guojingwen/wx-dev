@@ -94,6 +94,7 @@ app.use(async ctx => {
                     method: "POST"
                 }
             ).then(res => res.json());
+            console.log(res);
             content = resp.data.choices[0]["message"].content;
           } catch (err) {
             console.log('---', err);
