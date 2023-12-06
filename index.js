@@ -94,8 +94,8 @@ app.use(async ctx => {
                     method: "POST"
                 }
             ).then(res => res.json());
-            console.log(resp);
-            content = resp.data.choices[0]["message"].content;
+            // console.log(resp);
+            content = resp.choices[0]["message"].content;
           } catch (err) {
             console.log('---', err);
             content = "微信接口超时，请回复回复继续重试";
