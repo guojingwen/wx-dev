@@ -22,7 +22,6 @@ const OPENAI_BASE = "https://api.openai.com";
 
 app.use(async ctx => {
     const params = ctx.query;
-    console.log(params, ctx.method);
     // 你可以这样直接返回完成微信验证签名
     /*  if(params.echostr) {
         ctx.body = params.echostr;
@@ -36,7 +35,7 @@ app.use(async ctx => {
     const hash = crypto.createHash('sha1');
     hash.update(sortedParams);
     const sha1Str = hash.digest('hex');
-    console.log('---', sha1Str, signature);
+    // console.log('---', sha1Str, signature);
     if(ctx.method === 'GET') {
         if(sha1Str !== signature) {
             return ctx.body = '不是微信平台发送过来的消息'
@@ -92,6 +91,7 @@ app.use(async ctx => {
                     },
                     body: JSON.stringify(payload),
                     timeout: 4500, // 公众号自定义回复接口 5 秒内必须收到回复，否则聊天窗口会展示报错
+                    method: "POST"
                 }
             )
             content = resp.data.choices[0]["message"].content;
